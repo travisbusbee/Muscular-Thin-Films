@@ -1,10 +1,10 @@
 from mecode import *
 import os
-xdiff=(-0.2, -0.2, -0.2, -0.4)
-ydiff=(-0.2, -0.2, -0.2, -0.4)
+xdiff=(-0.75440, -0.2, 0.0145, -0.4)
+ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(80, 80, 80, 80)
+zero=(94.72265, 0, 50.630342, 0)
 
 wire_width = 1.75
 cantilever_width = 3.5
@@ -25,40 +25,41 @@ wire_height=(0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0
 wire_pressure=(21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21)
 wire_speed=(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
 
-basetop_height=(0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04)
-basetop_pressure=(21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21)
+basetop_height=(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05)
+basetop_pressure=(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
 basetop_speed=(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
 
-top_height=(0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09)
-top_over=(0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035, 0.035)
-top_pressure=(21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21)
-top_speed=(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+top_height=(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09 ,0.065, 0.065, 0.065, 0.075, 0.075, 0.075, 0.09, 0.09)
+top_over=(0.035, 0.04, 0.045, 0.05, 0.055, 0.065, 0.075, 0.085, 0.095, 0.065, 0.065, 0.065, 0.065, 0.065, 0.066, 0.065)
+top_pressure=(13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 16, 16, 16, 16, 20, 25)
+top_speed=(6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 8, 10, 10, 10, 10, 10)
 
 electrode_height=0.05
 electrode_pressure = 40
 
 
+
 def meander_2tails(x, y, z, spacing, orientation, tail, speed):
     feed(15)
     move(x=-tail)
-    feed(speed)
     abs_move(A=z)
-    write('DO0.0=1')
+    feed(speed)
+    write('$DO0.0=1')
     dwell(0.25)
     move(x=tail)
     meander(x, y, spacing=0.4375, orientation='y')
     move(x=tail)
-    write('DO0.0=0')
+    write('$DO0.0=0')
     move(A=3)
     
 def meander_tops(x, y, spacing, z, speed, orientation = 'y'):   
-    feed(speed)
+    feed(15)
     abs_move(C=z)
-    write
-    write('DO0.0=1')
+    feed(speed)
+    write('$DO2.0=1')
     dwell(0.25)
     meander(x, y, spacing, orientation = 'y')
-    write('DO0.0=0')
+    write('$DO2.0=0')
     move(C=3) 
       
         
@@ -66,9 +67,10 @@ def print_wires(z, speed, extra, tail, width, length, k):
     inset= (3.5-width)/2
     feed(15)
     move(x=(-tail+inset), y=extra)
-    feed(speed)
+    feed(15)
     abs_move(B=z)
-    write('DO0.0=1')
+    feed(speed)
+    write('$DO1.0=1')
     dwell(0.25)
     move(x=tail)
     move(y=-(length+extra))
@@ -80,6 +82,7 @@ def print_wires(z, speed, extra, tail, width, length, k):
     move(x=width)
     move(y=(length+extra))
     move(x=tail)
+    write('$DO1.0=0')
     move(B=3)
     
 def nozzle_change(nozzles = 'ab'):
@@ -87,178 +90,203 @@ def nozzle_change(nozzles = 'ab'):
     home()
     write(';----------nozzle change------------')
     if nozzles=='ab':
-        abs_move(A=-1)
+        abs_move(A=50)
         move(x=(allignment_x[1]-allignment_x[0]-(xdiff[1]-xdiff[0])), y=(allignment_y[0]-allignment_y[1]+(ydiff[0]-ydiff[1])))
     elif nozzles=='ac':
-        abs_move(A=-1)
+        abs_move(A=50)
         move(x=(allignment_x[2]-allignment_x[0]-(xdiff[2]-xdiff[0])), y=(allignment_y[0]-allignment_y[2]+(ydiff[0]-ydiff[2])))    
     elif nozzles=='ad':
-        abs_move(A=-1)
+        abs_move(A=50)
         move(x=(allignment_x[3]-allignment_x[0]-(xdiff[3]-xdiff[0])), y=(allignment_y[0]-allignment_y[3]+(ydiff[0]-ydiff[3])))
     elif nozzles=='ba':
-        abs_move(A=-1)
+        abs_move(B=50)
         move(x=(allignment_x[0]-allignment_x[1]-(xdiff[0]-xdiff[1])), y=(allignment_y[1]-allignment_y[0]+(ydiff[1]-ydiff[0])))
     elif nozzles=='bc':
-        abs_move(A=-1)
+        abs_move(B=50)
         move(x=(allignment_x[2]-allignment_x[1]-(xdiff[2]-xdiff[1])), y=(allignment_y[1]-allignment_y[2]+(ydiff[1]-ydiff[2])))
     elif nozzles=='bd':
-        abs_move(A=-1)
+        abs_move(B=50)
         move(x=(allignment_x[3]-allignment_x[1]-(xdiff[3]-xdiff[1])), y=(allignment_y[1]-allignment_y[3]+(ydiff[1]-ydiff[3])))
     elif nozzles=='ca':
-        abs_move(A=-1)
+        abs_move(C=50)
         move(x=(allignment_x[0]-allignment_x[2]-(xdiff[0]-xdiff[2])), y=(allignment_y[2]-allignment_y[0]+(ydiff[2]-ydiff[0])))
     elif nozzles=='cb':
-        abs_move(A=-1)
+        abs_move(C=50)
         move(x=(allignment_x[1]-allignment_x[2]-(xdiff[1]-xdiff[2])), y=(allignment_y[2]-allignment_y[1]+(ydiff[2]-ydiff[1])))
     elif nozzles=='cd':
-        abs_move(A=-1)
+        abs_move(C=50)
         move(x=(allignment_x[3]-allignment_x[2]-(xdiff[3]-xdiff[2])), y=(allignment_y[2]-allignment_y[3]+(ydiff[2]-ydiff[3])))
     elif nozzles=='da':
-        abs_move(A=-1)
+        abs_move(D=50)
         move(x=(allignment_x[0]-allignment_x[3]-(xdiff[0]-xdiff[3])), y=(allignment_y[3]-allignment_y[0]+(ydiff[3]-ydiff[0])))
     elif nozzles=='db':
-        abs_move(A=-1)
+        abs_move(D=50)
         move(x=(allignment_x[1]-allignment_x[3]-(xdiff[1]-xdiff[3])), y=(allignment_y[3]-allignment_y[1]+(ydiff[3]-ydiff[1])))
     elif nozzles=='dc':
-        abs_move(A=-1)
+        abs_move(D=50)
         move(x=(allignment_x[2]-allignment_x[3]-(xdiff[2]-xdiff[3])), y=(allignment_y[3]-allignment_y[2]+(ydiff[3]-ydiff[2])))
     else:
         write('; ---------- input a real nozzle change input...ya idiot--------')
+        
+def print_bottom_layer():
+    for i in range(8):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, base_pressure[i])
+        meander_2tails(x=3.5, y=-6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
+    
+    for i in range(8,16):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, base_pressure[i])
+        meander_2tails(x=3.5, y=6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
+        
+def print_all_wires():
+    for i in range(0,8,2):
+        feed(15)
+        j=i/2
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, wire_pressure[j])
+        print_wires(z=wire_height[j], speed=wire_speed[j], extra = 1.5, tail = 1.5, width = 1.75, length=5.25, k=j)
+    
+    
+    for i in range(8,16,2):
+        feed(15)
+        j=i/2
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, wire_pressure[j])
+        print_wires(z=wire_height[j], speed=wire_speed[j], extra = -1.5, tail = 1.5, width = 1.75, length=-5.25, k=j)
+        
+def print_insulating_tops():
+    for i in range(8):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, basetop_pressure[i])
+        meander_2tails(x=3.5, y=-6, z=basetop_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=basetop_speed[i] )
+    
+    for i in range(8,16):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, basetop_pressure[i])
+        meander_2tails(x=3.5, y=6, z=basetop_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=basetop_speed[i] )
+        
+def print_all_alligned_tops():
+    for i in range(8):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, top_pressure[i])
+        meander_tops(x=3.5, y=-6, spacing=top_over[i], z=top_height[i], speed=basetop_speed[i], orientation = 'y')
+    
+    for i in range(8,16):
+        
+        feed(15)
+        abs_move(*cantilever_position[i])
+        set_pressure(pressure_box, top_pressure[i])
+        meander_tops(x=3.5, y=6, spacing=top_over[i], z=top_height[i], speed=basetop_speed[i], orientation = 'y')
+        
+def print_electrodes():
+    for i in range(32):
+        j=(i/2)
+        if i%2==0:
+            feed(15)
+            abs_move(*pin_position[i]) 
+            set_pressure(pressure_box, electrode_pressure)
+            abs_move(D=electrode_height)
+            write('$DO0.3=1')
+            dwell(0.25)
+            feed(5)
+            if  i>15:
+                abs_move(x=(cantilever_position[j][0] + inset), y=(cantilever_position[j][1]-extra))
+            else:
+                abs_move(x=(cantilever_position[j][0] + inset), y=(cantilever_position[j][1]+extra))
+            move(x=-0.5)
+            abs_move(*pin_position[i]) 
+            write('$DO0.3=0')
+            move(D=3)
+        else:
+            feed(15)
+            abs_move(*pin_position[i]) 
+            set_pressure(pressure_box, electrode_pressure)
+            abs_move(D=electrode_height)
+            write('$DO0.3=1')
+            dwell(0.25)
+            feed(5)
+            if  i>15:
+                abs_move(x=(cantilever_position[j][0] + inset + wire_width), y=(cantilever_position[j][1]-extra))
+            else:
+                abs_move(x=(cantilever_position[j][0] + inset + wire_width), y=(cantilever_position[j][1]+extra))
+            move(x=-0.5)
+            abs_move(*pin_position[i]) 
+            write('$DO0.3=0')
+            move(D=3)
 ###################################################################
 # Generates Code for first layer of cantilevers
 #########################################################
 
 setup()
-home()
+write('$DO0.5=1')
+dwell(0.5)
+write('$DO0.5=0')
+toggle_pressure(pressure_box)
 abs_move(A=-5, B=-5, C=-5, D=-5)
 set_home(A=(zero[0]-5), B=(zero[1]-5), C=(zero[2]-5), D=(zero[3]-5))
-for i in range(8):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, base_pressure[i])
-    meander_2tails(x=3.5, y=-6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
-
-for i in range(8,16):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, base_pressure[i])
-    meander_2tails(x=3.5, y=6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
+feed(25)
+abs_move(x=342.229, y=73.62)
+set_home(x=0, y=0)
+## Start first layer ###
 
 
 
-nozzle_change('ab')
-# Insert Posoffset code
+
+
+
+
+
+
+#print_bottom_layer()
+
+#nozzle_change('ab')
+#set_home(x=0, y=0)
+
 
 
 # Code for top wires wires
 
-for i in range(0,8,2):
-    feed(15)
-    j=i/2
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, wire_pressure[j])
-    print_wires(z=wire_height[j], speed=wire_speed[j], extra = 1.5, tail = 1.5, width = 1.75, length=5.25, k=j)
+#print_all_wires()
 
 
-for i in range(8,16,2):
-    feed(15)
-    j=i/2
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, wire_pressure[j])
-    print_wires(z=wire_height[j], speed=wire_speed[j], extra = -1.5, tail = 1.5, width = 1.75, length=-5.25, k=j)
+#nozzle_change('ba')
+#set_home(x=0, y=0)
 
 
-nozzle_change('ba')
-#Insert Transition code
-# move A back to where B was and Posoffset
 
 
 # code for base tops
-
-for i in range(8):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, basetop_pressure[i])
-    meander_2tails(x=3.5, y=-6, z=basetop_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=basetop_speed[i] )
-
-for i in range(8,16):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, basetop_pressure[i])
-    meander_2tails(x=3.5, y=6, z=basetop_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=basetop_speed[i] )
+print_insulating_tops()
 
 
-#Insert Transition code
+
 # move C back where A was and Posoffset.
 nozzle_change('ac')
+set_home(x=0, y=0)
 
 
-# code for alliged tops
-
-for i in range(8):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, top_pressure[i])
-    meander_tops(x=3.5, y=-6, spacing=top_over[i], z=top_height[i], speed=basetop_speed[i], orientation = 'y')
-
-for i in range(8,16):
-    
-    feed(15)
-    abs_move(*cantilever_position[i])
-    set_pressure(pressure_box, top_pressure[i])
-    meander_tops(x=3.5, y=6, spacing=top_over[i], z=top_height[i], speed=basetop_speed[i], orientation = 'y')
+print_all_alligned_tops()
 
 
-
-#Insert Transition code
-# move D to where C was and Posoffset.
-nozzle_change('cd')
+#nozzle_change('cd')
+#set_home(x=0, y=0)
 
 #code for electrodes
 
-
-for i in range(32):
-    j=(i/2)
-    if i%2==0:
-       feed(15)
-       abs_move(*pin_position[i]) 
-       set_pressure(pressure_box, electrode_pressure)
-       abs_move(D=electrode_height)
-       write('DO0.3=1')
-       dwell(0.25)
-       feed(5)
-       if  i>15:
-           abs_move(x=(cantilever_position[j][0] + inset), y=(cantilever_position[j][1]-extra))
-       else:
-           abs_move(x=(cantilever_position[j][0] + inset), y=(cantilever_position[j][1]+extra))
-       move(x=-0.5)
-       abs_move(*pin_position[i]) 
-       write('DO0.3=0')
-       move(D=3)
-    else:
-       feed(15)
-       abs_move(*pin_position[i]) 
-       set_pressure(pressure_box, electrode_pressure)
-       abs_move(D=electrode_height)
-       write('DO0.3=1')
-       dwell(0.25)
-       feed(5)
-       if  i>15:
-           abs_move(x=(cantilever_position[j][0] + inset + wire_width), y=(cantilever_position[j][1]-extra))
-       else:
-           abs_move(x=(cantilever_position[j][0] + inset + wire_width), y=(cantilever_position[j][1]+extra))
-       move(x=-0.5)
-       abs_move(*pin_position[i]) 
-       write('DO0.3=0')
-       move(D=3)
-           
-       
-       
-       
+#print_electrodes()
 
 
+toggle_pressure(pressure_box)           
+       
+teardown()
