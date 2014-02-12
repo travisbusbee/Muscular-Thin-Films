@@ -103,9 +103,13 @@ def print_wires(z, speed, extra, tail, width, length, k):
     g.write('$DO1.0=0')
     g.move(B=3)
     
+    
+    
+            
 def nozzle_change(nozzles = 'ab'):
     g.feed(40)
     g.home()
+    g.dwell(0.25)
     g.write(';----------nozzle change------------')
     if nozzles=='ab':
         g.abs_move(A=50)
@@ -145,7 +149,52 @@ def nozzle_change(nozzles = 'ab'):
         g.move(x=(allignment_x[2]-allignment_x[3]-(xdiff[2]-xdiff[3])), y=(allignment_y[3]-allignment_y[2]+(ydiff[3]-ydiff[2])))
     else:
         g.write('; ---------- input a real nozzle change input...ya idiot--------')
+
         
+def nozzle_change_vars(nozzles = 'ab'):
+    g.feed(40)
+    g.home()
+    g.dwell(0.25)
+    g.write(';----------nozzle change------------')
+    if nozzles=='ab':
+        g.abs_move(A=50)
+        g.write('G1 X($Bx-$Ax-($Bx_dif-$Ax_dif))  Y($Ay-$By+($Ay_dif-$By_dif))')
+    elif nozzles=='ac':
+        g.abs_move(A=50)
+        g.write('G1 X($Cx-$Ax-($Cx_dif-$Ax_dif))  Y($Ay-$Cy+($Ay_dif-$Cy_dif))')    
+    elif nozzles=='ad':
+        g.abs_move(A=50)
+        g.write('G1 X($Dx-$Ax-($Dx_dif-$Ax_dif))  Y($Ay-$Dy+($Ay_dif-$Dy_dif))')
+    elif nozzles=='ba':
+        g.abs_move(B=50)
+        g.write('G1 X($Ax-$Bx-($Ax_dif-$Bx_dif))  Y($By-$Ay+($By_dif-$Ay_dif))')  
+    elif nozzles=='bc':
+        g.abs_move(B=50)
+        g.write('G1 X($Cx-$Bx-($Cx_dif-$Bx_dif))  Y($By-$Cy+($By_dif-$Cy_dif))')
+    elif nozzles=='bd':
+        g.abs_move(B=50)
+        g.write('G1 X($Dx-$Bx-($Dx_dif-$Bx_dif))  Y($By-$Dy+($By_dif-$Dy_dif))')
+    elif nozzles=='ca':
+        g.abs_move(C=50)
+        g.write('G1 X($Ax-$Cx-($Ax_dif-$Cx_dif))  Y($Cy-$Ay+($Cy_dif-$Ay_dif))')
+    elif nozzles=='cb':
+        g.abs_move(C=50)
+        g.write('G1 X($Bx-$Cx-($Bx_dif-$Cx_dif))  Y($Cy-$By+($Cy_dif-$By_dif))')
+    elif nozzles=='cd':
+        g.abs_move(C=50)
+        g.write('G1 X($Dx-$Cx-($Dx_dif-$Cx_dif))  Y($Cy-$Dy+($Cy_dif-$Dy_dif))')
+    elif nozzles=='da':
+        g.abs_move(D=50)
+        g.write('G1 X($Ax-$Dx-($Ax_dif-$Dx_dif))  Y($Dy-$Ay+($Dy_dif-$Ay_dif))')
+    elif nozzles=='db':
+        g.abs_move(D=50)
+        g.write('G1 X($Bx-$Dx-($Bx_dif-$Dx_dif))  Y($Dy-$By+($Dy_dif-$By_dif))')
+    elif nozzles=='dc':
+        g.abs_move(D=50)
+        g.write('G1 X($Cx-$Dx-($Cx_dif-$Dx_dif))  Y($Dy-$Cy+($Dy_dif-$Cy_dif))')
+    else:
+        g.write('; ---------- input a real nozzle change input...ya idiot--------')                
+                                
 def print_bottom_layer():
     for i in range(8):
         
@@ -268,7 +317,7 @@ g.set_home(x=0, y=0)
 
 #print_bottom_layer()
 
-#nozzle_change('ab')
+#nozzle_change_vars('ab')
 #set_home(x=0, y=0)
 
 
@@ -278,7 +327,7 @@ g.set_home(x=0, y=0)
 #print_all_wires()
 
 
-#nozzle_change('ba')
+#nozzle_change_vars('ba')
 #set_home(x=0, y=0)
 
 
@@ -290,14 +339,14 @@ print_insulating_tops()
 
 
 # move C back where A was and Posoffset.
-nozzle_change('ac')
+nozzle_change_vars('ac')
 g.set_home(x=0, y=0)
 
 
-print_all_alligned_tops()
+#print_all_alligned_tops()
 
 
-#nozzle_change('cd')
+#nozzle_change_vars('cd')
 #set_home(x=0, y=0)
 
 #code for electrodes
