@@ -1,10 +1,12 @@
 from mecode import MeCode
-import os
+from mecode.profilometer_parse import load_and_curate
+import numpy as np
+
 xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(94.72265, 0, 50.630342, 0)
+zero=(60, 60, 60, 60)
 
 wire_width = 1.75
 cantilever_width = 3.5
@@ -53,7 +55,21 @@ top_speed=(10,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
 electrode_height=0.05
 electrode_pressure = 40
 
-g = MeCode()
+calfile = r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_111.txt"
+outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
+
+cal_data = load_and_curate(calfile, reset_start=(2, -2))
+
+g = MeCode(
+    outfile=outfile,
+    header=None,
+    footer=None,
+    #cal_data=cal_data,
+    print_lines=False,
+    )
+
+g.cal_data= np.array([[2, -2, 0], [70, -2, -10], [70, -48, -20], [2, -48, -10]])
+
 
 
 
@@ -154,6 +170,11 @@ def nozzle_change(nozzles = 'ab'):
 def nozzle_change_vars(nozzles = 'ab'):
     g.feed(40)
     g.home()
+    if g.cal_data == None:
+        cal_off = True
+    else:
+        cal_off = False
+    g.cal_data=None
     g.dwell(0.25)
     g.write(';----------nozzle change------------')
     if nozzles=='ab':
@@ -193,7 +214,10 @@ def nozzle_change_vars(nozzles = 'ab'):
         g.abs_move(D=50)
         g.write('G1 X($Cx-$Dx-($Cx_dif-$Dx_dif))  Y($Dy-$Cy+($Dy_dif-$Cy_dif))')
     else:
-        g.write('; ---------- input a real nozzle change input...ya idiot--------')                
+        g.write('; ---------- input a real nozzle change input...ya idiot--------')   
+    if cal_off == False:
+        g.cal_data=load_and_curate(calfile, reset_start=(2, -2))       
+        g.cal_axis = nozzles[1].upper()         
                                 
 def print_bottom_layer():
     for i in range(8):
@@ -296,14 +320,20 @@ def print_electrodes():
 #########################################################
 
 g.setup()
+#g.align_nozzle(nozzle='A', floor=-72, deltafast=1, deltaslow=0.1, start=-15)
+#g.align_nozzle(nozzle='B', floor=-72, deltafast=1, deltaslow=0.1, start=-15)
+g.feed(30)
+g.abs_move(x=349.65, y=197.96)
 g.write('$DO7.0=1')
 g.dwell(1.5)
 g.write('$DO7.0=0')
 g.toggle_pressure(pressure_box)
+
 g.abs_move(A=-5, B=-5, C=-5, D=-5)
+
 g.set_home(A=(zero[0]-5), B=(zero[1]-5), C=(zero[2]-5), D=(zero[3]-5))
 g.feed(25)
-g.abs_move(x=342.229, y=73.62)
+g.abs_move(x=349.65, y=197.96)
 g.set_home(x=0, y=0)
 ## Start first layer ###
 
@@ -315,20 +345,22 @@ g.set_home(x=0, y=0)
 
 
 
-#print_bottom_layer()
+print_bottom_layer()
 
-#nozzle_change_vars('ab')
-#set_home(x=0, y=0)
+nozzle_change_vars('ab')
+g.set_home(x=0, y=0)
+g.cal_axis = 'B'
 
 
 
 # Code for top wires wires
 
-#print_all_wires()
+print_all_wires()
 
 
-#nozzle_change_vars('ba')
-#set_home(x=0, y=0)
+nozzle_change_vars('ba')
+g.set_home(x=0, y=0)
+g.cal_axis = 'A'
 
 
 
@@ -339,8 +371,8 @@ print_insulating_tops()
 
 
 # move C back where A was and Posoffset.
-nozzle_change_vars('ac')
-g.set_home(x=0, y=0)
+#nozzle_change_vars('ac')
+#g.set_home(x=0, y=0)
 
 
 #print_all_alligned_tops()
@@ -354,6 +386,7 @@ g.set_home(x=0, y=0)
 #print_electrodes()
 
 
-g.toggle_pressure(pressure_box)           
-       
+g.toggle_pressure(pressure_box)  
+#g.cal_axis = 'B'
+#g.cal_data=load_and_curate(calfile, reset_zero=True)   
 g.teardown()
