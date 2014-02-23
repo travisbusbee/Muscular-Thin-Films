@@ -79,7 +79,26 @@ def meander_tops(x, y, spacing, z, speed, orientation = 'y'):
     g.meander(x, y, spacing, orientation = 'y')
     g.write('$DO2.0=0')
     g.move(C=3) 
-      
+
+def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
+    g.feed(15)
+    g.abs_move(A=z)
+    g.feed(speed)
+    g.set_valve(2,1)
+    y_move = y - 0.5*nozzle
+    x_move = x - nozzle
+    
+    if  orientation == 'CW':
+        g.move(y=y_move)
+        g.move(x=x_move)
+        g.move(y=-y_move)
+    else:
+        g.move(y=y_move)
+        g.move(x=-x_move)
+        g.move(y=-y_move)
+        
+    g.feed(15)
+    g.move(A=3)
         
 def print_wires(z, speed, extra, tail, width, length, k):
     inset= (3.5-width)/2
@@ -209,6 +228,43 @@ def print_bottom_layer():
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, base_pressure[i])
         meander_2tails(x=3.5, y=6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
+        
+        
+        
+def print_spacer_layer(x, y, nozzle):
+    for i in range(8):
+        
+        g.feed(15)
+        g.abs_move(*cantilever_position[i])    
+        g.move(x=nozzle/2)
+        g.set_pressure(pressure_box, basetop_pressure[i])
+        y_staple(x=x, y=-y, nozzle = nozzle, z = basetop_height[i], speed = basetop_speed[i], orientation = 'CW')
+        g.move(A=1)
+        x_over= (((x-nozzle)/2)-0.5*nozzle)
+        y_height = (y-nozzle-0.85)
+        g.move(x=-x_over)
+        g.move(A=-1)
+        y_staple(x=2*nozzle, y=-y_height, nozzle = nozzle, z = basetop_height[i], speed = basetop_speed[i], orientation = 'CCW')
+        g.move(A=3)
+        
+        
+        
+        
+    for i in range(8,16):
+        
+        g.feed(15)
+        g.abs_move(*cantilever_position[i])
+        g.move(x=nozzle/2)
+        g.set_pressure(pressure_box, basetop_pressure[i])
+        y_staple(x=x, y=y, nozzle = nozzle, z = basetop_height[i], speed = basetop_speed[i], orientation = 'CW')
+        g.move(A=1)
+        x_over= (((x-nozzle)/2)-0.5*nozzle)
+        y_height = (y-nozzle-0.85)
+        g.move(x=-x_over)
+        g.move(A=-1)
+        y_staple(x=2*nozzle, y=y_height, nozzle = nozzle, z = basetop_height[i], speed = basetop_speed[i], orientation = 'CCW')
+        g.move(A=3)
+        
         
 def print_all_wires():
     for i in range(0,8,2):
