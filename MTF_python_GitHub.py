@@ -95,15 +95,13 @@ def meander_tops(x, y, spacing, z, speed, orientation = 'y'):
     g.meander(x, y, spacing, orientation = 'y')
     g.write('$DO2.0=0')
     g.move(C=3) 
-      
-      
-      
 
 def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
     g.feed(15)
     g.abs_move(A=z)
     g.feed(speed)
     g.set_valve(0,1)
+
     y_move = y - 0.5*nozzle
     x_move = x - nozzle
     
@@ -300,8 +298,7 @@ def print_bottom_layer():
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, base_pressure[i])
         meander_2tails(x=3.5, y=6, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i] )
-        
-        
+
 def print_spacer_layer(x, y, nozzle):
     for i in range(8):
         
@@ -313,6 +310,7 @@ def print_spacer_layer(x, y, nozzle):
         g.move(A=1)
         x_over= ((x/2)-nozzle)
         y_height = (y-nozzle-0.875)
+
         g.move(x=-x_over)
         g.move(A=-1)
         y_staple(x=2*nozzle, y=-y_height, nozzle = nozzle, z = basetop_height[i], speed = basetop_speed[i], orientation = 'CCW')
