@@ -6,7 +6,7 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(93.5373, 93.9792, 60, 93.852950)
+zero=(93.8139, 93.9792, 60, 93.852950)
 
 wire_width = 1.75
 cantilever_width = 3.5
@@ -43,35 +43,41 @@ basetop_pressure=(7, 7, 7, 7, 8, 8, 8, 8,
 basetop_speed=(5, 5, 5, 5, 5, 5, 5, 5,
                5, 5, 5, 5, 5, 5, 5, 5)
 
-top_height=(0.09,)*16#(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
+top_height=(0.07,)*16#(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
             #0.065, 0.065, 0.065, 0.075, 0.075, 0.075, 0.09, 0.09)
-top_over=(0.04,)*4+(0.06,)*4+(0.08,)*4+(0.1,)*4#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
+top_over=(0.1,)*2+(0.125,)*2+(0.1,)*2+(0.125,)*2+(0.150,)*2+(0.175,)*2+(0.150,)*2+(0.2,)*2#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
           #0.095, 0.1, 0.065, 0.065, 0.065, 0.065, 0.066, 0.065)
-top_pressure=(20,)*16#(13, 13, 13, 13, 13, 13, 13, 13,
+top_pressure=(14,)*4+(16,)*4+(14,)*4+(16,)*4#(13, 13, 13, 13, 13, 13, 13, 13,
               #14, 14, 16, 16, 16, 16, 20, 25)
-top_speed=(10,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
+top_speed=(6,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
            #6, 8, 8, 10, 10, 10, 10, 10)
 
 electrode_height=0.05
 electrode_pressure = 40
 
-calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_10.000000.txt"
+calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_030214_1.txt"
 outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
+alignment_file = r"C:\Users\Lewis Group\Desktop\Alignment\last_alignment_values.txt"
 
-#cal_data = load_and_curate(calfile, reset_start=(2, -2))
+cal_data = None#load_and_curate(calfile, reset_start=(2, -2))
 
 g = MeCode(
     outfile=outfile,
     header=None,
     footer=None,
-    #cal_data=cal_data,
+    cal_data=cal_data,
     print_lines=False,
     )
 
 g.cal_data = None #np.array([[2, -2, 0], [70, -2, -10], [70, -48, -20], [2, -48, -10]])
 
 
-
+def pressure_purge():
+    g.toggle_pressure(pressure_box)
+    g.write('$DO6.0=1')
+    g.dwell(1.5)
+    g.write('$DO6.0=0')
+    g.toggle_pressure(pressure_box)
 
 def meander_2tails(x, y, z, spacing, orientation, tail, speed):
     g.feed(15)
@@ -88,13 +94,13 @@ def meander_2tails(x, y, z, spacing, orientation, tail, speed):
     
 def meander_tops(x, y, spacing, z, speed, orientation = 'y'):   
     g.feed(15)
-    g.abs_move(C=z)
+    g.abs_move(D=z)
     g.feed(speed)
-    g.write('$DO2.0=1')
+    g.write('$DO3.0=1')
     g.dwell(0.25)
     g.meander(x, y, spacing, orientation = 'y')
-    g.write('$DO2.0=0')
-    g.move(C=3) 
+    g.write('$DO3.0=0')
+    g.move(D=3) 
 
 def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
     g.feed(15)
@@ -361,6 +367,7 @@ def print_all_wire_insulation(extra, inset, tail, width, length):
         j=i/2
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, base_pressure[j])
+        pressure_purge()
         print_wires_insulation(z=basetop_height[j], speed=base_speed[j], inset = inset, extra = extra, tail = tail, width = width, length=length)
         g.feed(30)
         g.move(A=50)
@@ -382,6 +389,7 @@ def print_insulating_tops():
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, basetop_pressure[i])
+        pressure_purge()
         meander_2tails(x=3.5, y=-6, z=basetop_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=basetop_speed[i] )
     
     for i in range(8,16):
@@ -397,6 +405,7 @@ def print_all_alligned_tops():
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, top_pressure[i])
+        pressure_purge()
         meander_tops(x=3.5, y=-6, spacing=top_over[i], z=top_height[i], speed=top_speed[i], orientation = 'y')
     
     for i in range(8,16):
@@ -442,6 +451,8 @@ def print_electrodes():
             g.write('$DO0.3=0')
             g.move(D=3)
             
+
+            
 def calculate_relative_z(reference_nozzle = 'A'):
     if reference_nozzle == 'A':
         g.write('$zA = -{}' .format(zero[0]))
@@ -471,43 +482,47 @@ def set_home_in_aerotech():
 #########################################################
 
 g.setup()
+#g.write(open(alignment_file).read())
+
 g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
-g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+#g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.align_zero_nozzle(nozzle='D', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.save_alignment()
 g.feed(30)
 g.abs_move(x=340.65, y=73.88)#197.96
-g.write('$DO6.0=1')
-g.dwell(1.5)
-g.write('$DO6.0=0')
+pressure_purge()
 g.toggle_pressure(pressure_box)
-
-#calculate_relative_z(reference_nozzle = 'A')
+calculate_relative_z(reference_nozzle = 'A')
 
 g.abs_move(A=-5, B=-5, C=-5, D=-5)
-g.set_home(A=(zero[0]-5), B=(zero[1]-5), C=(zero[2]-5), D=(zero[3]-5))
-#set_home_in_aerotech()
-
+#g.set_home(A=(zero[0]-5), B=(zero[1]-5), C=(zero[2]-5), D=(zero[3]-5))
+set_home_in_aerotech()
+#
 g.feed(25)
-g.abs_move(x=349.65, y=73.88)
+g.abs_move(x=340.65, y=73.88)
 g.set_home(x=0, y=0)
-### Start first layer ###
-
+#### Start first layer ###
+#
 print_bottom_layer()
+##
+#print_spacer_layer(x=3.5, y = 6, nozzle = 0.45)
+##
+#nozzle_change_vars('ab')
+#g.set_home(x=0, y=0)
+##
+#print_all_wires()
+##
+#nozzle_change_vars('ba')
+#g.set_home(x=0, y=0)
+##
+#print_all_wire_insulation(extra= -0.21875, inset= 0.65625, tail = 1.5, width = 2.1875, length = 5.34375)
+##
+#print_all_wire_insulation(extra= 0.21875, inset= 1.0925, tail = 1.5, width = 1.3125, length = 4.9075)
 
-print_spacer_layer(x=3.5, y = 6, nozzle = 0.45)
-
-nozzle_change_vars('ab')
+nozzle_change_vars('ad')
 g.set_home(x=0, y=0)
 
-print_all_wires()
-
-nozzle_change_vars('ba')
-g.set_home(x=0, y=0)
-
-print_all_wire_insulation(extra= -0.21875, inset= 0.65625, tail = 1.5, width = 2.1875, length = 5.34375)
-
-print_all_wire_insulation(extra= 0.21875, inset= 1.0925, tail = 1.5, width = 1.3125, length = 4.9075)
-
-
+print_all_alligned_tops()
 
 
 
