@@ -6,12 +6,12 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(93.8139, 93.9792, 60, 93.852950)
+zero=(93.55520, 93.9792, 60, 93.852950)
 
 wire_width = 1.75
 cantilever_width = 3.5
 inset=(cantilever_width-wire_width)/2
-pressure_box = 9
+pressure_box = 4
 extra = 1.5
 
 cantilever_position = ((11.93, -16.1), (17.68, -16.1), (25.43, -16.1), (31.18, -16.1), (38.93, -16.1), (44.68, -16.1), (52.43, -16.1), (58.18, -16.1),
@@ -23,7 +23,7 @@ pin_position = ((6.6, -3), (12.6, -3), (12.6, -3), (18.6, -3), (24.6, -3), (30.6
 
 base_height=(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
              0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
-base_pressure=(8,)*16#(21, 21, 21, 21, 21, 21, 21, 21,
+base_pressure=(7.8,)*16#(21, 21, 21, 21, 21, 21, 21, 21,
                #21, 21, 21, 21, 21, 21, 21, 21)
 base_speed=(5, 5, 5, 5, 5, 5, 5, 5,
             5, 5, 5, 5, 5, 5, 5, 5)
@@ -43,13 +43,13 @@ basetop_pressure=(7, 7, 7, 7, 8, 8, 8, 8,
 basetop_speed=(5, 5, 5, 5, 5, 5, 5, 5,
                5, 5, 5, 5, 5, 5, 5, 5)
 
-top_height=(0.07,)*16#(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
+top_height=(0.05,)*8+ (0.04,)*8 #(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
             #0.065, 0.065, 0.065, 0.075, 0.075, 0.075, 0.09, 0.09)
-top_over=(0.1,)*2+(0.125,)*2+(0.1,)*2+(0.125,)*2+(0.150,)*2+(0.175,)*2+(0.150,)*2+(0.2,)*2#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
+top_over=(0.125,)*2+(0.15,)*2+(0.175,)*2+(0.225,)*2+(0.125,)*2+(0.15,)*2+(0.175,)*2+(0.25,)*2#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
           #0.095, 0.1, 0.065, 0.065, 0.065, 0.065, 0.066, 0.065)
-top_pressure=(14,)*4+(16,)*4+(14,)*4+(16,)*4#(13, 13, 13, 13, 13, 13, 13, 13,
+top_pressure=(5.5, 5.5, 6, 7,)*4#+(16,)*4+(14,)*4+(16,)*4#(13, 13, 13, 13, 13, 13, 13, 13,
               #14, 14, 16, 16, 16, 16, 20, 25)
-top_speed=(6,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
+top_speed=(5,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
            #6, 8, 8, 10, 10, 10, 10, 10)
 
 electrode_height=0.05
@@ -57,7 +57,11 @@ electrode_pressure = 40
 
 calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_030214_1.txt"
 outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
-alignment_file = r"C:\Users\Lewis Group\Desktop\Alignment\last_alignment_values.txt"
+alignment_file_1 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_1.txt"
+alignment_file_2 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_2.txt"
+alignment_file_3 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_3.txt"
+alignment_file_4 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_4.txt"
+
 
 cal_data = None#load_and_curate(calfile, reset_start=(2, -2))
 
@@ -476,19 +480,35 @@ def calculate_relative_z(reference_nozzle = 'A'):
             g.write('$zC = $zD + ($zMeasureC - $zMeasureD) + ($Dz_dif-$Cz_dif)')
 
 def set_home_in_aerotech():
-    g.write('G92 A(-$zA-5) B(-$zB-5) C(-$zC - 5) D(-$zD - 5)')        
+    g.write('G92 A(-$zA-5) B(-$zB-5) C(-$zC - 5) D(-$zD - 5)')   
+    
+def recall_alignment(nozzle = 'A'):
+   if nozzle=='A':
+        g.write(open(alignment_file_1).read()) 
+   elif nozzle=='B':
+        g.write(open(alignment_file_2).read()) 
+   elif nozzle=='C':
+        g.write(open(alignment_file_3).read())
+   elif nozzle=='D':
+        g.write(open(alignment_file_4).read())
+   elif nozzle =='all':
+        g.write(open(alignment_file_1).read())
+        g.write(open(alignment_file_2).read())
+        g.write(open(alignment_file_3).read())
+        g.write(open(alignment_file_4).read())        
 ###################################################################
 # Generates Code for first layer of cantilevers
 #########################################################
 
 g.setup()
-#g.write(open(alignment_file).read())
+recall_alignment(nozzle = 'all')
 
-g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+#g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 #g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
-g.align_zero_nozzle(nozzle='D', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
-g.save_alignment()
+#g.align_zero_nozzle(nozzle='D', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+#g.save_alignment(nozzle = 'all')
 g.feed(30)
+g.abs_move(A=-5, B=-5, C=-5, D=-5)
 g.abs_move(x=340.65, y=73.88)#197.96
 pressure_purge()
 g.toggle_pressure(pressure_box)
@@ -503,7 +523,7 @@ g.abs_move(x=340.65, y=73.88)
 g.set_home(x=0, y=0)
 #### Start first layer ###
 #
-print_bottom_layer()
+#print_bottom_layer()
 ##
 #print_spacer_layer(x=3.5, y = 6, nozzle = 0.45)
 ##
@@ -523,6 +543,7 @@ nozzle_change_vars('ad')
 g.set_home(x=0, y=0)
 
 print_all_alligned_tops()
+g.abs_move(D=65)
 
 
 
