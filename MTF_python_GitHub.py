@@ -124,7 +124,28 @@ def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
         g.move(x=-x_move)
         g.move(y=-y_move)
         
-    g.set_valve(0,0)                  
+    g.set_valve(0,0)   
+    
+def print_well(x, y, z, speed, pressure, filament = 1, valve = 0):
+    g.feed(speed)
+    g.set_valve(num = valve, value = 1)
+    g.move(y=-y)
+    g.move(x=-x)
+    g.move(y=y+filament)
+    g.move(x=2*x+filament)
+    g.move(y=-(y+filament))
+    g.move(x=-x)
+    g.move(y=y) 
+    g.set_valve(num = valve, value = 0)
+    g.move(x=-filament, A=z) 
+
+def print_cover(z, height, length, over, speed, pressure, valve = 1):
+    g.feed(speed)
+    g.abs_move(A=z)
+    g.set_pressure(com_port=pressure_box, value=pressure)
+    g.set_valve(num = valve, value = 1)
+    g.meander(x=length, y=height, spacing = over, orientation = 'x')
+    g.set_valve(num = valve, value = 0)          
                            
 def print_wires(z, speed, extra, tail, width, length, k):
     #inset= (3.5-width)/2
