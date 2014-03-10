@@ -501,10 +501,10 @@ def recall_alignment(nozzle = 'A'):
 #########################################################
 
 g.setup()
-recall_alignment(nozzle = 'all')
+#recall_alignment(nozzle = 'all')
 
-#g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
-#g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 #g.align_zero_nozzle(nozzle='D', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 #g.save_alignment(nozzle = 'all')
 g.feed(30)
@@ -523,7 +523,7 @@ g.abs_move(x=340.65, y=73.88)
 g.set_home(x=0, y=0)
 #### Start first layer ###
 #
-#print_bottom_layer()
+print_bottom_layer()
 ##
 #print_spacer_layer(x=3.5, y = 6, nozzle = 0.45)
 ##
