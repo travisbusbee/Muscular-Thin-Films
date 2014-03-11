@@ -1,4 +1,4 @@
-from mecode import MeCode
+from mecode import G
 #from mecode.profilometer_parse import load_and_curate
 import numpy as np
 
@@ -78,7 +78,7 @@ alignment_file_4 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_4.t
 
 cal_data = None#load_and_curate(calfile, reset_start=(2, -2))
 
-g = MeCode(
+g = G(
     outfile=outfile,
     #header=None,
     #footer=None,
@@ -605,12 +605,18 @@ def recall_alignment(nozzle = 'A'):
         g.write(open(alignment_file_1).read())
         g.write(open(alignment_file_2).read())
         g.write(open(alignment_file_3).read())
-        g.write(open(alignment_file_4).read())        
+        g.write(open(alignment_file_4).read())   
+        
+             
+def arc_print():
+   g.abs_move(x=0, y=5)
+   g.abs_arc(direction = 'CW', radius = 5, X=5, Y=0)      
 ###################################################################
 # Generates Code for first layer of cantilevers
 #########################################################
 
 g.setup()
+arc_print()
 #recall_alignment(nozzle = 'all')
 
 #g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
@@ -638,9 +644,12 @@ g.setup()
 
 
 
-print_bottom_layer()
-print_all_covers()
-print_all_single_wells(layer_height = 0.2, layer_increments=3, total_increments=10, pressure=25, speed=10)
+#print_bottom_layer()
+#print_all_covers()
+#print_all_single_wells(layer_height = 0.2, layer_increments=3, total_increments=10, pressure=25, speed=10)
+#
+
+
 #print_spacer_layer(x=3.5, y = 6, nozzle = 0.45)
 
 #print_all_wires()
