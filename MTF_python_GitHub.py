@@ -21,6 +21,12 @@ pin_position = ((6.6, -3), (12.6, -3), (12.6, -3), (18.6, -3), (24.6, -3), (30.6
                 (3, -47.56), (9, -47.56), (9, -47.56), (15, -47.56), (21, -47.56), (27, -47.56), (27, -47.56),
                 (33, -47.56), (39, -47.56), (45, -47.56), (45, -47.56), (51, -47.56), (57, -47.56), (63, -47.56), (63, -47.56), (69, -47.56))
 
+well_position = ((11.93, -16.1), (17.68, -16.1), (25.43, -16.1), (31.18, -16.1), 
+                       (38.93, -34.45), (44.68, -34.45), (52.43, -34.45), (58.18, -34.45))
+
+well_pressure=(25,)*8#(21, 21, 21, 21, 21, 21, 21, 21,
+               #21, 21, 21, 21, 21, 21, 21, 21)
+
 base_height=(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
              0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
 base_pressure=(7.8,)*16#(21, 21, 21, 21, 21, 21, 21, 21,
@@ -56,7 +62,13 @@ electrode_height=0.05
 electrode_pressure = 40
 
 calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_030214_1.txt"
-outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
+
+# Robomama Outfile
+#outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
+
+# Travis' Computer Outfile
+outfile = r"C:\Users\tbusbee\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
+
 alignment_file_1 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_1.txt"
 alignment_file_2 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_2.txt"
 alignment_file_3 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_3.txt"
@@ -106,6 +118,16 @@ def meander_tops(x, y, spacing, z, speed, orientation = 'y'):
     g.write('$DO3.0=0')
     g.move(D=3) 
 
+def stacked_rectangle(x, y, layer_height, layers, nozzle = 'A'):
+    
+    for i in range(layers):
+        g.move(x=x)
+        g.move(y=-y)
+        g.move(x=-x)
+        g.move(y=y)
+        g.move(**{nozzle:layer_height})
+    
+
 def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
     g.feed(15)
     g.abs_move(A=z)
@@ -126,7 +148,7 @@ def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
         
     g.set_valve(0,0)   
     
-def print_well(x, y, z, speed, pressure, filament = 1, valve = 0):
+def print_double_well(x, y, z, speed, pressure, filament = 1, valve = 0):
     g.feed(speed)
     g.set_valve(num = valve, value = 1)
     g.move(y=-y)
@@ -138,15 +160,81 @@ def print_well(x, y, z, speed, pressure, filament = 1, valve = 0):
     g.move(y=y) 
     g.set_valve(num = valve, value = 0)
     g.move(x=-filament, A=z) 
+    
+def print_single_well(x, y, layer_height, layers, speed, pressure, filament = 1, valve = 0):
+    g.feed(speed)
+    g.set_pressure(comp_port = pressure_box, value = pressure)
+    pressure_purge()
+    g.set_valve(num = valve, value = 1)
+    stacked_rectangle(x=x, y=y, start= 'UL', direction = 'CW', layer_height = layer_height, layers = layers)
+    g.set_valve(num=valve, value = 0)
+    
 
 def print_cover(z, height, length, over, speed, pressure, valve = 1):
-    g.feed(speed)
-    g.abs_move(A=z)
+    g.feed(speed)    
     g.set_pressure(com_port=pressure_box, value=pressure)
+    pressure_purge()
     g.set_valve(num = valve, value = 1)
     g.meander(x=length, y=height, spacing = over, orientation = 'x')
     g.set_valve(num = valve, value = 0)          
-                           
+
+def print_all_covers():
+    for i in range(4):
+        
+        g.feed(15)
+        g.abs_move(*well_position[i])
+        g.move(x=0.5, y=-0.5)
+        g.abs_move(A=0.15)
+        print_cover(z=0.15, height=-5, length = 13.5, over = 0.4, speed = 8, pressure = well_pressure[i], valve = 0)
+        g.move(A=3)
+    
+    
+    for i in range(4,8):
+        
+        g.feed(15)
+        g.abs_move(*well_position[i])
+        g.move(x=0.5, y=0.5)
+        g.abs_move(A=0.15)
+        print_cover(z=0.15, height=5, length = 12.5, over = 0.4, speed = 8, pressure = well_pressure[i], valve = 0)
+        g.move(A=3)                          
+                                                                                 
+                                                                                 
+def print_all_single_wells(layer_height, layer_increments, total_increments, pressure, speed):
+    
+    for i in range(4):      
+        g.feed(15)
+        g.abs_move(*well_position[i])
+        g.abs_move(A=0.15)
+        print_single_well(x = 12.5, y = -15, layer_height = layer_height ,  layers = layer_increments, speed = speed, pressure = pressure, filament = 1, valve = 0)
+        g.move(A=3)
+    
+    for i in range(4,8):      
+        g.feed(15)
+        g.abs_move(*well_position[i])
+        g.abs_move(A=0.15)
+        print_single_well(x = 12.5, y = 15, layer_height = layer_height ,  layers = layer_increments, speed = speed, pressure = pressure, filament = 1, valve = 0)
+        g.move(A=3) 
+    count = 0
+    repeats = (total_increments)-1     
+    
+    
+    for i in range(repeats):
+        
+        count = count + layer_increments
+        for i in range(4):
+            g.feed(15)
+            g.abs_move(*well_position[i])
+            g.abs_move(A=(0.15+count*layer_height))
+            print_single_well(x = 12.5, y = -15, layer_height = layer_height ,  layers = layer_increments, speed = speed, pressure = pressure, filament = 1, valve = 0)
+            g.move(A=3)
+        for i in range(4,8):      
+            g.feed(15)
+            g.abs_move(*well_position[i])
+            g.abs_move(A=(0.15+count*layer_height))
+            print_single_well(x = 12.5, y = 15, layer_height = layer_height ,  layers = layer_increments, speed = speed, pressure = pressure, filament = 1, valve = 0)
+            g.move(A=3) 
+         
+
 def print_wires(z, speed, extra, tail, width, length, k):
     #inset= (3.5-width)/2
     inset = 0.875
