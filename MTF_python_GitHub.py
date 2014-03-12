@@ -67,8 +67,8 @@ calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_030214_1.tx
 #outfile = r"C:\Users\Lewis Group\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
 
 # Travis' Computer Outfile
-#outfile = r"C:\Users\tbusbee\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.pgm"
-outfile = r"/Users/busbees/Documents/Code/Muscular-Thin-Films\MTF_out-testing.txt"
+outfile = r"C:\Users\tbusbee\Documents\GitHub\Muscular-Thin-Films\MTF_out-testing.txt"
+#outfile = r"/Users/busbees/Documents/Code/Muscular-Thin-Films\MTF_out-testing.txt"
 
 alignment_file_1 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_1.txt"
 alignment_file_2 = r"C:\Users\Lewis Group\Desktop\Alignment\alignment_values_2.txt"
@@ -80,10 +80,10 @@ cal_data = None#load_and_curate(calfile, reset_start=(2, -2))
 
 g = G(
     outfile=outfile,
-    #header=None,
-    #footer=None,
+    header=None,
+    footer=None,
     #cal_data=cal_data,
-    #print_lines=False,
+    print_lines=False,
     )
 
 g.cal_data = None #np.array([[2, -2, 0], [70, -2, -10], [70, -48, -20], [2, -48, -10]])
@@ -607,16 +607,20 @@ def recall_alignment(nozzle = 'A'):
         g.write(open(alignment_file_3).read())
         g.write(open(alignment_file_4).read())   
         
+
              
-def arc_print():
-   g.abs_move(x=0, y=5)
-   g.abs_arc(direction = 'CW', radius = 5, X=5, Y=0)      
+                                       
+
+           
+
 ###################################################################
 # Generates Code for first layer of cantilevers
 #########################################################
 
 g.setup()
-arc_print()
+
+
+
 #recall_alignment(nozzle = 'all')
 
 #g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
