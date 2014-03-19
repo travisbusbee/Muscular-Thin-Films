@@ -158,6 +158,7 @@ def y_staple(x, y, nozzle, z, speed, orientation = 'CW'):
         g.move(y=-y_move)
         
     g.set_valve(0,0)   
+
     
 def print_double_well(x, y, z, speed, pressure, filament = 1, valve = 0):
     g.feed(speed)
@@ -252,7 +253,39 @@ def print_all_single_wells(layer_height, layer_increments, total_increments, pre
             print_single_well(x = 12.5, y = 14, layer_height = layer_height ,  layers = layer_increments, speed = speed, pressure = well_pressure[i], filament = 1, valve = 0)
             g.clip(axis='A', direction='-y', height=3)
             #g.move(A=3) 
+
          
+def print_confinement_wells(length, overhang, height, pressure, speed, nozzle, valve):
+    for i in range(1,7,2):
+        g.feed(15)
+        g.abs_move(*cantilever_position[i])
+        g.move(x=-(overhang))
+        g.set_pressure(pressure_box, pressure)
+        g.abs_move(**{nozzle:height})
+        g.set_valve(num = valve, value = 1)
+        g.feed(15)
+        g.dwell(0.25)
+        g.move(y=-length)
+        g.move(x=(2*overhang + cantilever_width))
+        g.move(y=length)
+        g.set_valve(num = valve, value = 0)
+        g.clip(axis=nozzle, direction='+y', height=3)
+           
+    
+    for i in range(9,15,2):
+        g.feed(15)
+        g.abs_move(*cantilever_position[i])
+        g.move(x=-(overhang))
+        g.set_pressure(pressure_box, pressure)
+        g.abs_move(**{nozzle:height})
+        g.set_valve(num = valve, value = 1)
+        g.feed(15)
+        g.dwell(0.25)
+        g.move(y=length)
+        g.move(x=(2*overhang + cantilever_width))
+        g.move(y=-length)
+        g.set_valve(num = valve, value = 0)
+        g.clip(axis=nozzle, direction='+y', height=3)    
 
 def print_wires(z, speed, extra, tail, width, length, valve, nozzle, clip_direction, arc_direction, k):
     inset= (cantilever_width-width)/2
@@ -698,7 +731,7 @@ print_bottom_layer(nozzle = 'A', valve = 0)
 #g.set_home(x=0, y=0)
 ###
 ###
-print_all_wires(nozzle = 'B', valve = 1)
+#print_all_wires(nozzle = 'B', valve = 1)
 ##
 #nozzle_change_vars('ba')
 #g.set_home(x=0, y=0)
@@ -714,8 +747,9 @@ print_all_wires(nozzle = 'B', valve = 1)
 #
 #print_electrodes(valve=2, nozzle='C')
 
-#print_all_covers()
-#print_all_single_wells(layer_height = 0.35, layer_increments=5, total_increments=4, pressure=31, speed=15)
+print_all_covers()
+print_confinement_wells(length = 7.5, overhang = 1.2, height=0.2, pressure = 23, speed = 6, nozzle = 'A', valve = 0)
+print_all_single_wells(layer_height = 0.35, layer_increments=5, total_increments=4, pressure=31, speed=15)
 
 
 
