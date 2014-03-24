@@ -6,7 +6,7 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(77.260030, 93.9792, 60, 93.852950)
+zero=(79.161950, 93.9792, 60, 93.852950)
 
 wire_width = 1.75
 cantilever_width = 3.6
@@ -32,21 +32,21 @@ cover_pressure=(13,)*8#(21, 21, 21, 21, 21, 21, 21, 21,
 
 base_height=(0.02,)*16#(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
              #0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
-base_pressure=(5.6,)*16#(5.2, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.1)*2
+base_pressure=(6.2,)*8+(6.1,)*8#(5.2, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.1)*2
                
 base_speed=(4,)*16#(5, 5, 5, 5, 5, 5, 5, 5,
             #5, 5, 5, 5, 5, 5, 5, 5)
 base_over = 0.4
 
-wire_height=(0.06,)*16+(0.07,)*4+(0.065,)*4#(0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04,
+wire_height=(0.02,)*4+(0.03,)*4+(0.065,)*4#(0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04,
             # 0.03, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02, 0.02)
-wire_pressure=(68,)*8#(73, 73, 73, 73, 73, 73, 73, 73)#(68,)*16+(68,)*4+(68,)*4
+wire_pressure=(7.8,)*8#(68,)*16+(68,)*4+(68,)*4
 wire_speed = (0.75,)*16#+(4,)*4+(3.75,)*4+(4,)*4 #(2, 2, 2, 2, 2, 2, 2, 2,
             #2, 2, 2, 2, 2, 2, 2, 2)
 
 basetop_height=(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
                 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05)
-basetop_pressure=(5.9,)*8+(5.9,)*8#+(6.3,)*4+(6.4,)*4+(6.5,)*4
+basetop_pressure=(6.3,)*8+(6.3,)*8#+(6.3,)*4+(6.4,)*4+(6.5,)*4
 
 basetop_speed=(5, 5, 5, 5, 5, 5, 5, 5,
                5, 5, 5, 5, 5, 5, 5, 5)
@@ -465,7 +465,7 @@ def nozzle_change_vars(nozzles = 'ab'):
 def print_bottom_layer(nozzle, valve):
     g.set_pressure(pressure_box, base_pressure[0])
     pressure_purge(delay = 1.5, valve = 0)
-    for i in range(2,8):
+    for i in range(8):
         
         g.feed(15)
         g.abs_move(*cantilever_position[i])
@@ -796,28 +796,30 @@ set_home_in_aerotech()
 #nozzle_change_vars('ab')
 #g.set_home(x=0, y=0)
 #
-#print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'B', overhang = 0.5)
-#
-#
-#
-#nozzle_change_vars('ba')
+
+#nozzle_change_vars('ac')
 #g.set_home(x=0, y=0)
+#print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'C', overhang = 0.5)
+##
+#
+#
+
 
 #
 #print_underwire_double(height=-0.15, nozzle = 'D', length = 5.2, width = 1.55, over_space = 0.6, extra = 0.5)
 
-
+#
 #print_bottom_layer(nozzle = 'A', valve = 0)
-##
+###
 #nozzle_change_vars('ab')
 #g.set_home(x=0, y=0)
 ###
 ###
 #print_all_wires(nozzle = 'B', valve = 1)
-##
+###
 #nozzle_change_vars('ba')
 #g.set_home(x=0, y=0)
-
+#
 #print_insulating_tops(nozzle = 'A', valve = 0)
 #
 #nozzle_change_vars('ad')
