@@ -6,10 +6,10 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(79.083188, 93.920530, 60, 93.852950)
+zero=(78.832970, 93.920530, 60, 93.852950)
 
 wire_width = 1.75
-cantilever_width = 3.6
+cantilever_width = 3.42
 inset=(cantilever_width-wire_width)/2
 pressure_box = 4
 extra = 1.5
@@ -30,13 +30,13 @@ cover_pressure=(13,)*8#(21, 21, 21, 21, 21, 21, 21, 21,
                
 
 
-base_height=(0.01,)*16#(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+base_height=(0.02,)*16#(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
              #0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
-base_pressure=(4.9, 5.0, 5.1, 5.2)*4#(5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2)*2#(6.2,)*8+(6.1,)*8#
+base_pressure=(5.2,)*16#(5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2)*2#(6.2,)*8+(6.1,)*8#
                
 base_speed=(4,)*16#(5, 5, 5, 5, 5, 5, 5, 5,
             #5, 5, 5, 5, 5, 5, 5, 5)
-base_over = 0.4
+base_over = 0.38
 
 wire_height=(0.035,)*4+(0.035,)*4#(0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04,
             # 0.03, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02, 0.02)
@@ -50,17 +50,17 @@ basetop_pressure=(4.2,)*16#(4.2, 4.3, 4.4, 4.5, 4.0, 4.0, 4.1, 4.1, 4.2, 4.3, 4.
 basetop_speed=(4,)*16#(5, 5, 5, 5, 5, 5, 5, 5,
                #5, 5, 5, 5, 5, 5, 5, 5)
 
-top_height=(0.06, 0.06)*8# + (0.11,)*4+(0.1,)*4+(0.12,)*4 #(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
+top_height=(0.041,)*16# + (0.11,)*4+(0.1,)*4+(0.12,)*4 #(0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.09, 0.09,
             #0.065, 0.065, 0.065, 0.075, 0.075, 0.075, 0.09, 0.09)
-top_over=(0.065,)*2+(0.07,)*2+(0.075,)*2+(0.08,)*2+(0.085,)*2+(0.09,)*2+(0.095,)*2+(0.1,)*2#+(0.04,)*2+(0.04,)*2+(0.035,)*2+(0.05,)*2#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
+top_over=(0.07,)*2+(0.08,)*2+(0.09,)*2+(0.095,)*2+(0.1,)*2 + (0.11,)*2 + (0.115,)*2 + (0.12,)*2#+(0.04,)*2+(0.04,)*2+(0.035,)*2+(0.05,)*2#(0.04, 0.04, 0.05, 0.05, 0.055, 0.065, 0.075, 0.085,
           #0.095, 0.1, 0.065, 0.065, 0.065, 0.065, 0.066, 0.065)
-top_pressure=(19, 18.5, 19, 18.5,)*4#+(16,)*4+(14,)*4+(16,)*4#(13, 13, 13, 13, 13, 13, 13, 13,
+top_pressure=(6.5, 6.5, 6.8, 6.8)*16#(19, 18.5, 19, 18.5,)*4#+(16,)*4+(14,)*4+(16,)*4#(13, 13, 13, 13, 13, 13, 13, 13,
               #14, 14, 16, 16, 16, 16, 20, 25)
-top_speed=(5,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
+top_speed=(4,)*16#(6, 6, 6, 6, 6, 6, 6, 6,
            #6, 8, 8, 10, 10, 10, 10, 10)
 
-electrode_height=0.08
-electrode_pressure = 10
+electrode_height=0.09
+electrode_pressure = 4
 
 calfile =  r"C:\Users\Lewis Group\Desktop\Busbee\profilometer_output_030214_1.txt"
 
@@ -120,7 +120,48 @@ def meander_2tails(x, y, z, spacing, orientation, tail, speed, clip_direction, n
     g.dwell(0.3)
     g.clip(axis=nozzle, direction=clip_direction, height=5)
     #g.move(A=3)
+
+def meander_2tails_nostop(x, y, z, spacing, orientation, tail, speed, clip_direction, nozzle, valve, dwell = 0.5):
+    g.feed(15)
+    g.abs_move(**{nozzle:z})
+    g.feed(1)
+    if valve is not None:
+        g.set_valve(num = valve, value = 1)
+    #g.dwell(dwell)
+    g.move(x=tail)
+    g.feed(speed)
+    g.meander(x=x, y=y, spacing=spacing, orientation='y', tail = False)
+    g.move(x=tail)
+    #if valve is not None:
+    #    g.set_valve(num = valve, value = 0)
+        
+    #g.dwell(0.3)
+    #g.clip(axis=nozzle, direction=clip_direction, height=5)
+    #g.move(A=3)
     
+def meander_2tails_2(x, y, z, spacing, orientation, tail, speed, slow_speed, clip_direction, nozzle, valve, dwell = 0.5):
+    g.feed(15)
+    g.move(x=-tail)
+    g.abs_move(**{nozzle:z})
+    g.feed(1)
+    if valve is not None:
+        g.set_valve(num = valve, value = 1)
+    g.dwell(dwell)
+    g.move(x=tail)
+    g.feed(slow_speed)
+    g.move(y=y)
+    g.move(x=spacing)
+    g.move(y=-y)
+    g.move(x=spacing)
+    g.feed(speed)
+    g.meander(x=(x-2*spacing), y=y, spacing=spacing, orientation='y', tail = False)
+    g.move(x=tail)
+    if valve is not None:
+        g.set_valve(num = valve, value = 0)
+        
+    g.dwell(0.3)
+    g.clip(axis=nozzle, direction=clip_direction, height=5)
+    #g.move(A=3)        
 def meander_tops(x, y, spacing, z, speed, nozzle, clip_direction, valve, orientation = 'y'):   
     g.feed(15)
     g.abs_move(D=z)
@@ -421,40 +462,40 @@ def nozzle_change_vars(nozzles = 'ab'):
     g.write(';----------nozzle change------------')
     if nozzles=='ab':
         g.abs_move(A=50)
-        g.write('G1 X($Bx-$Ax-($Bx_dif-$Ax_dif))  Y($Ay-$By+($Ay_dif-$By_dif))')
+        g.write('G1 X($Bx-$Ax-($Bx_dif-$Ax_dif))  Y(-($Ay-$By)+($Ay_dif-$By_dif))')
     elif nozzles=='ac':
         g.abs_move(A=50)
-        g.write('G1 X($Cx-$Ax-($Cx_dif-$Ax_dif))  Y($Ay-$Cy+($Ay_dif-$Cy_dif))')    
+        g.write('G1 X($Cx-$Ax-($Cx_dif-$Ax_dif))  Y(-($Ay-$Cy)+($Ay_dif-$Cy_dif))')    
     elif nozzles=='ad':
         g.abs_move(A=50)
-        g.write('G1 X($Dx-$Ax-($Dx_dif-$Ax_dif))  Y($Ay-$Dy+($Ay_dif-$Dy_dif))')
+        g.write('G1 X($Dx-$Ax-($Dx_dif-$Ax_dif))  Y(-($Ay-$Dy)+($Ay_dif-$Dy_dif))')
     elif nozzles=='ba':
         g.abs_move(B=50)
-        g.write('G1 X($Ax-$Bx-($Ax_dif-$Bx_dif))  Y($By-$Ay+($By_dif-$Ay_dif))')  
+        g.write('G1 X($Ax-$Bx-($Ax_dif-$Bx_dif))  Y(-($By-$Ay)+($By_dif-$Ay_dif))')  
     elif nozzles=='bc':
         g.abs_move(B=50)
-        g.write('G1 X($Cx-$Bx-($Cx_dif-$Bx_dif))  Y($By-$Cy+($By_dif-$Cy_dif))')
+        g.write('G1 X($Cx-$Bx-($Cx_dif-$Bx_dif))  Y(-($By-$Cy)+($By_dif-$Cy_dif))')
     elif nozzles=='bd':
         g.abs_move(B=50)
-        g.write('G1 X($Dx-$Bx-($Dx_dif-$Bx_dif))  Y($By-$Dy+($By_dif-$Dy_dif))')
+        g.write('G1 X($Dx-$Bx-($Dx_dif-$Bx_dif))  Y(-($By-$Dy)+($By_dif-$Dy_dif))')
     elif nozzles=='ca':
         g.abs_move(C=50)
-        g.write('G1 X($Ax-$Cx-($Ax_dif-$Cx_dif))  Y($Cy-$Ay+($Cy_dif-$Ay_dif))')
+        g.write('G1 X($Ax-$Cx-($Ax_dif-$Cx_dif))  Y(-($Cy-$Ay)+($Cy_dif-$Ay_dif))')
     elif nozzles=='cb':
         g.abs_move(C=50)
-        g.write('G1 X($Bx-$Cx-($Bx_dif-$Cx_dif))  Y($Cy-$By+($Cy_dif-$By_dif))')
+        g.write('G1 X($Bx-$Cx-($Bx_dif-$Cx_dif))  Y(-($Cy-$By)+($Cy_dif-$By_dif))')
     elif nozzles=='cd':
         g.abs_move(C=50)
-        g.write('G1 X($Dx-$Cx-($Dx_dif-$Cx_dif))  Y($Cy-$Dy+($Cy_dif-$Dy_dif))')
+        g.write('G1 X($Dx-$Cx-($Dx_dif-$Cx_dif))  Y(-($Cy-$Dy)+($Cy_dif-$Dy_dif))')
     elif nozzles=='da':
         g.abs_move(D=50)
-        g.write('G1 X($Ax-$Dx-($Ax_dif-$Dx_dif))  Y($Dy-$Ay+($Dy_dif-$Ay_dif))')
+        g.write('G1 X($Ax-$Dx-($Ax_dif-$Dx_dif))  Y(-($Dy-$Ay)+($Dy_dif-$Ay_dif))')
     elif nozzles=='db':
         g.abs_move(D=50)
-        g.write('G1 X($Bx-$Dx-($Bx_dif-$Dx_dif))  Y($Dy-$By+($Dy_dif-$By_dif))')
+        g.write('G1 X($Bx-$Dx-($Bx_dif-$Dx_dif))  Y(-($Dy-$By)+($Dy_dif-$By_dif))')
     elif nozzles=='dc':
         g.abs_move(D=50)
-        g.write('G1 X($Cx-$Dx-($Cx_dif-$Dx_dif))  Y($Dy-$Cy+($Dy_dif-$Cy_dif))')
+        g.write('G1 X($Cx-$Dx-($Cx_dif-$Dx_dif))  Y(-($Dy-$Cy)+($Dy_dif-$Cy_dif))')
     else:
         g.write('; ---------- input a real nozzle change input...ya idiot--------')   
     if cal_off == False:
@@ -464,20 +505,40 @@ def nozzle_change_vars(nozzles = 'ab'):
 def print_bottom_layer(nozzle, valve):
     g.set_pressure(pressure_box, base_pressure[0])
     pressure_purge(delay = 1.5, valve = 0)
-    for i in range(8):
+    for i in range(0,8):
         
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, base_pressure[i])
-        meander_2tails(x=cantilever_width, y=-6.75, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '+y', nozzle = nozzle, valve = valve, dwell = 1 )
+        meander_2tails_2(x=cantilever_width, y=-5.75, z=base_height[i], spacing=base_over, slow_speed = 1, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '+y', nozzle = nozzle, valve = valve, dwell = 3 )
     
     for i in range(8,16):
         
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.set_pressure(pressure_box, base_pressure[i])
-        meander_2tails(x=cantilever_width, y=6.75, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '-y', nozzle = nozzle, valve = valve, dwell = 1 )
+        meander_2tails_2(x=cantilever_width, y=5.75, z=base_height[i], spacing=base_over, slow_speed = 1, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '-y', nozzle = nozzle, valve = valve, dwell = 3 )
 
+def print_bottom_layer_2(nozzle, valve):
+    g.set_pressure(pressure_box, base_pressure[0])
+    pressure_purge(delay = 1.5, valve = 0)
+    for i in range(0,8):
+        
+        g.feed(15)
+        g.set_pressure(pressure_box, base_pressure[i])
+        g.abs_move(x=(cantilever_position[i][0]-1), y=cantilever_position[i][1])
+        meander_2tails_nostop(x=cantilever_width, y=-5.75, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '+y', nozzle = nozzle, valve = valve, dwell = 1 )
+    
+    g.set_valve(num = valve, value = 0)
+    g.move(**{nozzle:3})
+    for i in range(8,16):
+        
+        g.feed(15)
+        g.set_pressure(pressure_box, base_pressure[i])
+        g.abs_move(x=(cantilever_position[i][0]-1), y=cantilever_position[i][1])       
+        meander_2tails_nostop(x=cantilever_width, y=5.75, z=base_height[i], spacing=base_over, orientation = 'y', tail = 1, speed=base_speed[i], clip_direction = '-y', nozzle = nozzle, valve = valve, dwell = 1 )
+    g.set_valve(num = valve, value = 0)
+    g.move(**{nozzle:3})
 def print_spacer_layer(x, y, nozzle):
     for i in range(8):
         
@@ -579,23 +640,23 @@ def print_insulating_tops(nozzle, valve):
 def print_all_alligned_tops(nozzle, valve):
     g.set_pressure(pressure_box, top_pressure[1])
     pressure_purge(delay = 1.5)
-    for i in range(0,8):
+    for i in range(1,8,2):
         j=i/2
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.move(x=-0.1)
         g.set_pressure(pressure_box, top_pressure[i])
         pressure_purge(delay = 0.5)
-        meander_tops(x=(cantilever_width + 0.1), y=-6.75, spacing=top_over[i], z=top_height[i], speed=top_speed[i], orientation = 'y', nozzle = nozzle, clip_direction = '+y', valve = valve)
+        meander_tops(x=(cantilever_width + 0.1), y=-5.75, spacing=top_over[i], z=top_height[i], speed=top_speed[i], orientation = 'y', nozzle = nozzle, clip_direction = '+y', valve = valve)
     
-    for i in range(8,16):
+    for i in range(9,16,2):
         j=i/2
         g.feed(15)
         g.abs_move(*cantilever_position[i])
         g.move(x=-0.1)
         g.set_pressure(pressure_box, top_pressure[i])
         pressure_purge(delay = 0.5)
-        meander_tops(x=(cantilever_width + 0.1), y=6.75, spacing=top_over[i], z=top_height[i], speed=top_speed[i], orientation = 'y', nozzle = nozzle, clip_direction = '+y', valve = valve)
+        meander_tops(x=(cantilever_width + 0.1), y=5.75, spacing=top_over[i], z=top_height[i], speed=top_speed[i], orientation = 'y', nozzle = nozzle, clip_direction = '+y', valve = valve)
         
 def print_sacrificial(trace_speed, height, over, nozzle, overhang = 0.85):
     for i in range(1,8,2):
@@ -678,7 +739,7 @@ def print_underwire_double(height, nozzle, length, width, over_space, extra):
         g.clip(axis=nozzle, direction='-y', height=3)                              
                                                                                                 
 def print_electrodes(valve, nozzle):
-    for i in range(32):
+    for i in range(8,16):
         j=(i/2)
         if i%2==0:
             g.feed(15)
@@ -781,12 +842,12 @@ g.toggle_pressure(pressure_box)
 #
 g.feed(30)
 g.abs_move(A=-1, B=-1, C=-1, D=-1)
-g.abs_move(x=350.469, y=129.9315)#197.96
+g.abs_move(x=(350.469 -0.75), y=129.9315 +11)#197.96
 g.write('G1 X$Ax_dif  Y$Ay_dif')
 g.set_home(x=0, y=0)
 #
 
-calculate_relative_z(reference_nozzle = 'B')
+calculate_relative_z(reference_nozzle = 'A')
 #
 g.abs_move(A=-5, B=-5, C=-5, D=-5)
 
@@ -795,42 +856,42 @@ set_home_in_aerotech()
 
 
 #
+#
+nozzle_change_vars('ab')
+g.set_home(x=0, y=0)
+print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'B', overhang = 0.5)
+#
+#
 
-#nozzle_change_vars('ac')
-#g.set_home(x=0, y=0)
-#print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'C', overhang = 0.5)
-#
-#
-#
-#nozzle_change_vars('cd')
-#g.set_home(x=0, y=0)
+nozzle_change_vars('ba')
+g.set_home(x=0, y=0)
 #
 #print_underwire_double(height=-0.1, nozzle = 'D', length = 5.2, width = 1.55, over_space = 0.7, extra = 0.5)
 
 #
-#print_bottom_layer(nozzle = 'A', valve = 0)
+print_bottom_layer(nozzle = 'A', valve = 0)
 
 
-nozzle_change_vars('ab')
-g.set_home(x=0, y=0)
-
-
-print_all_wires(nozzle = 'B', valve = 1)
-###
-nozzle_change_vars('ba')
-g.set_home(x=0, y=0)
-
-print_insulating_tops(nozzle = 'A', valve = 0)
+#nozzle_change_vars('ab')
+#g.set_home(x=0, y=0)
 #
+#
+#print_all_wires(nozzle = 'B', valve = 1)
+####
+#nozzle_change_vars('ba')
+#g.set_home(x=0, y=0)
+#
+#print_insulating_tops(nozzle = 'A', valve = 0)
+##
 nozzle_change_vars('ad')
 g.set_home(x=0, y=0)
 ##
 print_all_alligned_tops(nozzle = 'D', valve = 3)
 #nozzle_change_vars('dc')
 #g.set_home(x=0, y=0)
-#
-#print_electrodes(valve=2, nozzle='C')
 
+#print_electrodes(valve=1, nozzle='B')
+#
 #print_all_covers()
 #print_confinement_wells(length = 7.8, overhang = 1.5, height=0.2, pressure = 12, speed = 8, nozzle = 'A', valve = 0)
 #print_all_single_wells(layer_height = 0.35, layer_increments=5, total_increments=6, pressure=29.5, speed=15)
