@@ -6,7 +6,7 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(80.90, 93.920530, 60, 77.290805)
+zero=(93.556, 93.920530, 60, 77.290805)
 
 wire_width = 1.75
 cantilever_width = 3.42
@@ -339,6 +339,27 @@ def print_confinement_wells(length, overhang, height, pressure, speed, nozzle, v
         g.move(y=-length)
         g.set_valve(num = valve, value = 0)
         g.clip(axis=nozzle, direction='+y', height=3)    
+
+
+
+
+def print_test_wires(pressure, speed, length, spacing, height, valve, nozzle):
+    
+    g.set_pressure(pressure_box, pressure)
+    for i in range(5):
+        g.feed(15)
+        g.abs_move(**{nozzle:height})
+        g.feed(speed)
+        g.set_valve (num = valve, value = 1)
+        g.dwell(0.25)
+        g.move(x=length)
+        g.set_valve (num = valve, value = 0)
+        g.feed(15)
+        g.move(**{nozzle:3})
+        g.move(x=-length, y=spacing)
+        
+        
+
 
 def print_wires(z, speed, extra, tail, width, length, valve, nozzle, clip_direction, arc_direction, k):
     inset= (cantilever_width-width)/2
@@ -903,9 +924,9 @@ g.toggle_pressure(pressure_box)
 #
 g.feed(30)
 g.abs_move(A=-1, B=-1, C=-1, D=-1)
-g.abs_move(x=(350.469 -0.75), y=129.9315 +11)#197.96
-g.write('G1 X$Ax_dif  Y$Ay_dif')
-g.set_home(x=0, y=0)
+#g.abs_move(x=(350.469 -0.75), y=129.9315 +11)#197.96
+#g.write('G1 X$Ax_dif  Y$Ay_dif')
+#g.set_home(x=0, y=0)
 #
 
 calculate_relative_z(reference_nozzle = 'A')
@@ -913,8 +934,15 @@ calculate_relative_z(reference_nozzle = 'A')
 g.abs_move(A=-5, B=-5, C=-5, D=-5)
 
 set_home_in_aerotech()
+
+g.clip(axis='A', direction= '+x', height=5) 
+
 #
-#g.abs_move(x=5, y=-5)
+g.abs_move(x=369.1, y=44.5)
+g.set_home(x=0, y=0)
+g.move(y=1)
+#print_test_wires(pressure = 30, speed = 2, length = 30, spacing = 2, height = 0.015, valve = 0, nozzle = 'A')
+
 #pressure_test(nozzle = 'A', valve = 0, length= 10, space = 0.385, z = 0.02, speed = 4, dwell = 0.35, start_pressure = 4.8, pressure_step = 0.2, repeats = 12)
 
 #
@@ -953,8 +981,8 @@ set_home_in_aerotech()
 
 
 
-nozzle_change_vars('ab')
-g.set_home(x=0, y=0)
+#nozzle_change_vars('ab')
+#g.set_home(x=0, y=0)
 ###
 #print_all_alligned_tops(nozzle = 'D', valve = 3)
 #
@@ -967,7 +995,7 @@ g.set_home(x=0, y=0)
 #
 #print_all_covers(nozzle = 'B', valve = 0)
 #print_confinement_wells(length = 7.8, overhang = 1.5, height=0.2, pressure = 11, speed = 8, nozzle = 'B', valve = 0)
-print_all_single_wells(layer_height = 0.35, layer_increments=5, total_increments=6, pressure=28.5, speed=15, nozzle = 'B', valve = 0)
+#print_all_single_wells(layer_height = 0.35, layer_increments=5, total_increments=6, pressure=28.5, speed=15, nozzle = 'B', valve = 0)
 
 
 
