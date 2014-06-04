@@ -6,7 +6,7 @@ xdiff=(-0.75440, -0.2, 0.0145, -0.4)
 ydiff=(-0.59385, -0.2,-1.81930, -0.4)
 allignment_x=(483, 379, 275, 171)
 allignment_y=(217, 217, 217, 217)
-zero=(93.7464, 93.920530, 60, 77.290805)
+zero=(79.992400, 93.920530, 60, 77.290805)
 
 wire_width = 1.75
 cantilever_width = 3.42
@@ -950,7 +950,24 @@ def pressure_test(nozzle, valve, length, space, z, speed, dwell, start_pressure,
         g.move(x=2)
         count = count + 1    
                                        
-
+def print_sensor_test(nozzle, valve, sensor_length, lead_length, lead_z, sensor_z, width, sensor_speed, lead_speed, pressure, dwell):
+    g.set_pressure(pressure_box, pressure)
+    g.feed(15)
+    g.abs_move(**{nozzle:lead_z})
+    g.feed(lead_speed)
+    g.set_valve(num = valve, value = 1)
+    g.dwell(dwell)
+    g.move(x=lead_length)
+    g.abs_move(**{nozzle:sensor_z})
+    g.feed(sensor_speed)
+    g.move(x=sensor_length)
+    g.move(y=-width)
+    g.move(x=-sensor_length)
+    g.abs_move(**{nozzle:lead_z})
+    g.move(x=-lead_length)
+    g.set_valve(num = valve, value = 0)
+    g.feed(15)
+    g.move(**{nozzle:25})
            
 
 ###################################################################
@@ -964,8 +981,8 @@ def pressure_test(nozzle, valve, length, space, z, speed, dwell, start_pressure,
 recall_alignment(nozzle = 'all')
 #
 #
-#g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
-#g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.align_zero_nozzle(nozzle='A', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
+g.align_zero_nozzle(nozzle='B', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 #g.align_zero_nozzle(nozzle='C', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 #g.align_zero_nozzle(nozzle='D', floor=-49.25, deltafast=0.85, deltaslow=0.1, start=-15)
 g.save_alignment(nozzle = 'all')
@@ -986,10 +1003,11 @@ set_home_in_aerotech()
 
 
 
-#
-g.abs_move(x=343.679, y=69.87)
-g.set_home(x=0, y=0)
-g.move(y=1)
+#g.abs_move(x=455.93, y=70.05)
+g.abs_move(x=350.62, y=59.05)
+#g.set_home(x=0, y=0)
+#print_sensor_test(nozzle = 'A', valve = 0, sensor_length= 30, lead_length = 10, lead_z = 0.12, sensor_z = 0.01, width = 20, lead_speed = 3, sensor_speed = 5, pressure = 1, dwell = 2)
+#g.move(y=1)
 
 
 #print_test_wires(pressure = 30, speed = 2, length = 30, spacing = 2, height = 0.015, valve = 0, nozzle = 'A')
@@ -998,32 +1016,32 @@ g.move(y=1)
 
 #
 ##
-nozzle_change_vars('ac')
-g.set_home(x=0, y=0)
+#nozzle_change_vars('ac')
+#g.set_home(x=0, y=0)
 
 #g.abs_move(x=5, y=-20)
 #pressure_test(nozzle = 'D', valve = 3, length= 10, space = 0.075, z = 0.023, speed = 4, dwell = 0.35, start_pressure = 16, pressure_step = 0.5, repeats = 16)
 
 #
-print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'C', overhang = 0.5)
+#print_sacrificial(trace_speed = 5, height = -0.15, over = 0.75, nozzle = 'C', overhang = 0.5)
 #
 #
 #
-nozzle_change_vars('ca')
-g.set_home(x=0, y=0)
+#nozzle_change_vars('ca')
+#g.set_home(x=0, y=0)
 
 #print_underwire_double(height=-0.1, nozzle = 'D', length = 5.2, width = 1.55, over_space = 0.7, extra = 0.5)
 
 #
-print_bottom_layer_2(nozzle = 'A', valve = 0)
-print_spacer_layer(x=3.42, y=5.75, nozzle='A', valve=0)
+#print_bottom_layer_2(nozzle = 'A', valve = 0)
+#print_spacer_layer(x=3.42, y=5.75, nozzle='A', valve=0)
 
 
 
 #celltest_bottom_layer(nozzle = 'A', valve = 0)
 
-nozzle_change_vars('ab')
-g.set_home(x=0, y=0)
+#nozzle_change_vars('ab')
+#g.set_home(x=0, y=0)
 #
 #
 #print_all_square_wires(nozzle = 'B', valve = 1)
