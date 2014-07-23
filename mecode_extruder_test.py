@@ -65,4 +65,5 @@ def calc_extrude_rate(x, y, extrude=True, relative = True, extrusion_width = 0.4
 #                    layer_height = 0.22, multiplier = 1, filament_diameter = 1.75)
 g.meander(x=10, y=10, spacing = 0.5)
 g.move(x=10.3, y=10)
+g.retract(5)
 g.teardown()
