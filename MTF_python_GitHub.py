@@ -103,24 +103,7 @@ def pressure_purge(delay, valve = None):
     g.toggle_pressure(pressure_box)
     g.dwell(0.5)
 
-def meander_2tails(x, y, z, spacing, orientation, tail, speed, clip_direction, nozzle, valve, dwell = 0.5):
-    g.feed(15)
-    g.move(x=-tail)
-    g.abs_move(**{nozzle:z})
-    g.feed(1)
-    if valve is not None:
-        g.set_valve(num = valve, value = 1)
-    g.dwell(dwell)
-    g.move(x=tail)
-    g.feed(speed)
-    g.meander(x=x, y=y, spacing=spacing, orientation='y', tail = False)
-    g.move(x=tail)
-    if valve is not None:
-        g.set_valve(num = valve, value = 0)
-        
-    g.dwell(0.3)
-    g.clip(axis=nozzle, direction=clip_direction, height=5)
-    #g.move(A=3)
+
 
 def meander_2tails_nostop(x, y, z, spacing, orientation, tail, speed, clip_direction, nozzle, valve, dwell = 0.5):
     g.feed(15)
