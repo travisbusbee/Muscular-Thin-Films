@@ -1,0 +1,25 @@
+DVAR $hFile
+DVAR $cCheck
+DVAR $press
+DVAR $length
+DVAR $lame
+DVAR $comport
+
+
+$DO0.0=0
+$DO1.0=0
+$DO2.0=0
+$DO3.0=0
+
+FILECLOSE
+
+G71; metric units;
+G76; time base seconds;
+G91; incremental mode;
+G68;
+
+G65 F3000;accel speed
+G66 F3000;accel speed;
+
+ENABLE X Y Z U;
+POSOFFSET CLEAR X Y Z U
